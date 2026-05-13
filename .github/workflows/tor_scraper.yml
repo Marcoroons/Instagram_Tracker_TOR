@@ -1,11 +1,13 @@
-name: Cimory Tor Scraper
+name: Cimory Tor Scraper (Optimized)
 
 on:
-  workflow_dispatch: # This adds the "Run workflow" button in the Actions tab
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Added a 60-minute timeout so it doesn't run forever if it hangs
+    timeout-minutes: 60 
 
     steps:
       - name: Checkout Repository
@@ -16,21 +18,25 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install System Tor & Libraries
+      - name: 1. Install System Tor
         run: |
           sudo apt-get update
-          sudo apt-get install -y tor
-          pip install -r requirements.txt
-
-      - name: Configure Tor Control Port
+          sudo apt-get install -y tor --no-install-recommends
+      
+      - name: 2. Install Python Dependencies
         run: |
-          # We tell Tor to listen to our Python script on port 9051
+          python -m pip install --upgrade pip
+          pip install pandas openpyxl instaloader stem pysocks
+
+      - name: 3. Start Tor Service
+        run: |
           echo "ControlPort 9051" | sudo tee -a /etc/tor/torrc
           echo "CookieAuthentication 0" | sudo tee -a /etc/tor/torrc
           sudo service tor restart
-          sleep 10 # Wait for Tor to connect to the network
+          # Increased wait time to ensure Tor fully connects
+          sleep 20 
 
-      - name: Run Scraper
+      - name: 4. Run Scraper
         env:
           GMAIL_USER: ${{ secrets.GMAIL_USER }}
           GMAIL_PASS: ${{ secrets.GMAIL_PASS }}
