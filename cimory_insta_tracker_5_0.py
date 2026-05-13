@@ -18,7 +18,7 @@ INSTA_USER  = os.environ.get("INSTA_USER")   # Optional but recommended
 INSTA_PASS  = os.environ.get("INSTA_PASS")   # Optional but recommended
 TOR_PASSWORD = os.environ.get("TOR_PASSWORD", "")  # Set if you configured a control password
 
-RECEIVER_EMAIL = ["Clarissa.gunawan@cimory.com", "mhokijanto@gmail.com"]
+RECEIVER_EMAIL = ["mhokijanto@gmail.com"]
 INPUT_FILE     = "INSTA INFLUENCER VISIBILITY TABLE.xlsx"
 OUTPUT_FILE    = f"Cimory_Reels_Report_{date.today()}.xlsx"
 
