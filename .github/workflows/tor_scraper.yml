@@ -1,0 +1,39 @@
+name: Cimory Tor Scraper
+
+on:
+  workflow_dispatch: # This adds the "Run workflow" button in the Actions tab
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install System Tor & Libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tor
+          pip install -r requirements.txt
+
+      - name: Configure Tor Control Port
+        run: |
+          # We tell Tor to listen to our Python script on port 9051
+          echo "ControlPort 9051" | sudo tee -a /etc/tor/torrc
+          echo "CookieAuthentication 0" | sudo tee -a /etc/tor/torrc
+          sudo service tor restart
+          sleep 10 # Wait for Tor to connect to the network
+
+      - name: Run Scraper
+        env:
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_PASS: ${{ secrets.GMAIL_PASS }}
+          INSTA_USER: ${{ secrets.INSTA_USER }}
+          INSTA_PASS: ${{ secrets.INSTA_PASS }}
+        run: python cimory_insta_tracker_5_0.py
